@@ -3,8 +3,9 @@ package model;
 import java.time.LocalDate;
 
 /**
- * Represents a financial transaction with an amount, description, category, date, and type.
- * A transaction can be either income (positive) or expense (negative).
+ * Represents a financial transaction with an amount, description, category,
+ * date, and type. A transaction can be either income (positive) or expense
+ * (negative).
  */
 class Transaction {
 
@@ -12,11 +13,12 @@ class Transaction {
     private String description;
     private String category;
     private LocalDate date;
+
     /**
-     * REQUIRES: amount > 0, description and category is not empty.
-     * EFFECTS: creates a new transactions 
+     * REQUIRES: amount > 0, description and category is not empty. EFFECTS:
+     * creates a new transactions
      */
-    public Transaction(double amount, String description, String category, LocalDate date){
+    public Transaction(double amount, String description, String category, LocalDate date) {
         this.amount = amount;
         this.description = description;
         this.category = category;
@@ -27,31 +29,28 @@ class Transaction {
      * EFFECTS: returns the amount of the transaction
      */
     public double getAmount() {
-        return amount; //stub
+        return amount;
     }
 
-    /** 
+    /**
      * EFFECTS: returns the description of the transaction
      */
-    public String getDescription(){
-        return description; //stub
+    public String getDescription() {
+        return description;
     }
 
     /**
      * EFFECTS: returns the category of the transaction
      */
-    public String getCategory(){
-        return category; // stub
+    public String getCategory() {
+        return category;
     }
-
 
     /**
      * EFFECTS: returns the date of the transaction
      */
-    public LocalDate getDate(){
-        return date; // stub
+    public LocalDate getDate() {
+        return date;
     }
-
-    
 
 }
