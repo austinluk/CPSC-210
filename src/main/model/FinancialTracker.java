@@ -1,11 +1,9 @@
 package model;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public class FinancialTracker {
     private List<Transaction> transactions;
-
 
     /**
      * EFFECT: construct a financial tracker with empty transaction list
@@ -44,14 +42,6 @@ public class FinancialTracker {
      * REQUIRES: category is not null
      */
     public List<Transaction> getTransactionsByCategory(String category) {
-        return null; // stub
-    }
-
-    /**
-     * REQUIRES: startDate and endDate are not null, startDate <= endDate
-     * EFFECTS: returns list of transactions filtered by date range (inclusive)
-     */
-    public List<Transaction> getTransactionsByDateRange(LocalDate startDate, LocalDate endDate) {
         return null; // stub
     }
 

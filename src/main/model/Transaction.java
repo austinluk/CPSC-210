@@ -15,7 +15,7 @@ public class Transaction {
     private LocalDate date;
 
     /**
-     * REQUIRES: amount > 0, description and category is not empty. 
+     * REQUIRES: Description and category and date is not empty. 
      * EFFECTS: creates a new transactions
      */
     public Transaction(double amount, String description, String category, LocalDate date) {
