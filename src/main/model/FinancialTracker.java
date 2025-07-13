@@ -1,63 +1,74 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FinancialTracker {
+
     private List<Transaction> transactions;
 
     /**
      * EFFECT: construct a financial tracker with empty transaction list
      */
-    public FinancialTracker(){
-        // stub
+    public FinancialTracker() {
+        transactions = new ArrayList<>();
     }
 
     /**
-     * MODIFIES: this
-     * EFFECTS: adds given transaction to the tracker, updates budget if applicable
-     * REQUIRES: transaction is not null
+     * MODIFIES: this EFFECTS: adds given transaction to the tracker, updates
+     * budget if applicable REQUIRES: transaction is not null
      */
     public void addTransaction(Transaction transaction) {
-        // stub
+        transactions.add(transaction);
     }
-    
+
     /**
-     * MODIFIES: this
-     * EFFECTS: removes given transaction from the tracker, updates budget if applicabl
-     * REQUIRES: transaction is not null
+     * MODIFIES: this EFFECTS: removes given transaction from the tracker,
+     * updates budget if applicabl REQUIRES: transaction is not null
      */
     public boolean removeTransaction(Transaction transaction) {
-        return false; // stub
+        boolean removed = transactions.remove(transaction);
+        return removed;
     }
 
     /**
      * EFFECTS: returns list of all transactions
      */
     public List<Transaction> getTransactions() {
-        return null; //stub
+        return new ArrayList<>(transactions);
     }
 
     /**
-     * EFFECTS: returns list of transactions filtered by category
-     * REQUIRES: category is not null
+     * EFFECTS: returns list of transactions filtered by category REQUIRES:
+     * category is not null
      */
     public List<Transaction> getTransactionsByCategory(String category) {
-        return null; // stub
+        List<Transaction> filteredTransactions = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getCategory().equals(category)) {
+                filteredTransactions.add(transaction);
+            }
+        }
+        return filteredTransactions;
     }
 
     /**
      * EFFECTS: returns total income amount
      */
     public double getTotalIncome() {
-        return 0; // stub
+        double totalIncome = 0.0;
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount() > 0) {
+                totalIncome += transaction.getAmount();
+            }
+        }
+        return totalIncome;
     }
-
 
     /**
      * EFFECTS: returns number of transactions
      */
     public int getTransactionCount() {
-        return 0; // stub
+        return transactions.size();
     }
 }
-

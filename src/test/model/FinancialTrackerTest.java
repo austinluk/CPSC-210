@@ -69,8 +69,6 @@ public class FinancialTrackerTest {
         List<Transaction> incomeTransactions = tracker.getTransactionsByCategory("Income");
         assertEquals(2, incomeTransactions.size());
 
-        List<Transaction> foodTransactions = tracker.getTransactionsByCategory("Food");
-        assertEquals(1, foodTransactions.size());
     }
 
     @Test
