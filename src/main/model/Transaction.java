@@ -17,28 +17,31 @@ class Transaction {
      * EFFECTS: creates a new transactions 
      */
     public Transaction(double amount, String description, String category, LocalDate date){
-        // stub
+        this.amount = amount;
+        this.description = description;
+        this.category = category;
+        this.date = date;
     }
 
     /**
      * EFFECTS: returns the amount of the transaction
      */
     public double getAmount() {
-        return 0; //stub
+        return amount; //stub
     }
 
     /** 
      * EFFECTS: returns the description of the transaction
      */
     public String getDescription(){
-        return ""; //stub
+        return description; //stub
     }
 
     /**
      * EFFECTS: returns the category of the transaction
      */
     public String getCategory(){
-        return ""; // stub
+        return category; // stub
     }
 
 
@@ -46,7 +49,7 @@ class Transaction {
      * EFFECTS: returns the date of the transaction
      */
     public LocalDate getDate(){
-        return null; // stub
+        return date; // stub
     }
 
     
