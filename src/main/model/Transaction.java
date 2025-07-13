@@ -7,7 +7,7 @@ import java.time.LocalDate;
  * date, and type. A transaction can be either income (positive) or expense
  * (negative).
  */
-class Transaction {
+public class Transaction {
 
     private double amount;
     private String description;
@@ -15,8 +15,8 @@ class Transaction {
     private LocalDate date;
 
     /**
-     * REQUIRES: amount > 0, description and category is not empty. EFFECTS:
-     * creates a new transactions
+     * REQUIRES: amount > 0, description and category is not empty. 
+     * EFFECTS: creates a new transactions
      */
     public Transaction(double amount, String description, String category, LocalDate date) {
         this.amount = amount;
