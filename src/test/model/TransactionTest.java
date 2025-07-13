@@ -1,19 +1,21 @@
 package model;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.time.LocalDate;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSample {
+
+public class TransactionTest {
     
     @BeforeEach
     void runBefore() {
-
+       
     }
 
     @Test
-    void sampleTest() {
-        assertTrue(true);
+    void testConstructor() {
+        
     }
 }
