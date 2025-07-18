@@ -57,3 +57,4 @@ public class JsonReader {
             addThingy(wr, nextThingy);
         }
     }
+}
