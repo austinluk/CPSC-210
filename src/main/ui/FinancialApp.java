@@ -1,5 +1,6 @@
 package ui;
 
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -13,7 +14,7 @@ import model.Transaction;
  * well as view financial summaries.
  */
 public class FinancialApp {
-
+    private static final String JSON_STORE = "./data/FinancialHistory.json";
     private FinancialTracker tracker;
     private Scanner input;
     private boolean keepGoing;
@@ -313,5 +314,13 @@ public class FinancialApp {
             }
 
         } while (choice != 0);
+    }
+
+    private void saveFinancialHistory(){
+        try {
+            
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to find the file");
+        }
     }
 }

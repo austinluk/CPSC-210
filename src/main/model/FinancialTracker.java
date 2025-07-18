@@ -4,7 +4,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FinancialTracker {
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import persistence.Writable;
+
+
+public class FinancialTracker implements Writable{
 
     private List<Transaction> transactions;
 
@@ -71,5 +77,24 @@ public class FinancialTracker {
      */
     public int getTransactionCount() {
         return transactions.size();
+    }
+
+   
+    @Override
+    public JSONObject toJson(){
+        JSONObject json = new JSONObject();
+        json.put("transactions", transactionsToJson());
+        return json;
+    }
+
+    // EFFECTS: returns transactions in this financial tracker as a JSON array
+    private JSONArray transactionsToJson() {
+        JSONArray jsonArray = new JSONArray();
+
+        for (Transaction t : transactions) {
+            jsonArray.put(t.toJson());
+        }
+
+        return jsonArray;
     }
 }
