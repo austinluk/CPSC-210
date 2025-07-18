@@ -20,6 +20,7 @@ I am interested in this project because managing personal finances is a valuable
 - Filter transactions by date and category  
 - Set monthly budgets and receive notifications  
 - Export financial data for backup or external use  
+- As a user, when I select the quit option from the application menu, I want to be reminded to save my to-do list to file and have the option to do so or not.
 
 ---
 
@@ -31,3 +32,6 @@ I am interested in this project because managing personal finances is a valuable
 - I want to be able to see a summary of my total income, total expenses, and current balance to understand my financial situtation
 - I want to be able to filter transactions by date range or category (such as Food, Rent, Salary) 
 - I want to be able to set monthly budget limits per category, and receive alerts when my spending in any category approaches or exceeds the budget
+- As a user, I want to be able to save my Financial History
+- As a user, I want to be able to be able to load my Financial History from file 
+- As a user, when I select the quit option from the application menu, I want to be reminded to save my Transactions and have the option to do so or not.
