@@ -18,7 +18,6 @@ I am interested in this project because managing personal finances is a valuable
 - Categorize transactions for better organization  
 - View summaries of income, expenses, and balance  
 - Filter transactions by date and category  
-- Set monthly budgets and receive notifications  
 - Export financial data for backup or external use  
 - As a user, when I select the quit option from the application menu, I want to be reminded to save my to-do list to file and have the option to do so or not.
 
