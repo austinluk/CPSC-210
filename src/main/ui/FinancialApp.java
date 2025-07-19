@@ -317,4 +317,14 @@ public class FinancialApp {
 
         } while (choice != 0);
     }
+    
+    // EFFECTS: saves FinancialHistory
+    private void saveFinancialHistory() {
+        //stub
+    }
+
+    // EFFECTS: load FinancialHistory
+    private void loadFinancialHistory(){
+        //stub
+    }
 }
