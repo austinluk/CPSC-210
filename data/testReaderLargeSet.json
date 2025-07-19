@@ -1,0 +1,94 @@
+{
+  "transactions": [
+    {
+      "amount": 1500.0,
+      "description": "Transaction 1",
+      "category": "Income",
+      "date": "2025-01-01"
+    },
+    {
+      "amount": -300.0,
+      "description": "Transaction 2",
+      "category": "Expense",
+      "date": "2025-01-02"
+    },
+    {
+      "amount": 500.0,
+      "description": "Transaction 3",
+      "category": "Income",
+      "date": "2025-01-03"
+    },
+    {
+      "amount": -150.0,
+      "description": "Transaction 4",
+      "category": "Expense",
+      "date": "2025-01-04"
+    },
+    {
+      "amount": -200.0,
+      "description": "Transaction 5",
+      "category": "Expense",
+      "date": "2025-01-05"
+    },
+    {
+      "amount": 2500.0,
+      "description": "Salary payment",
+      "category": "Income",
+      "date": "2025-01-06"
+    },
+    {
+      "amount": -75.5,
+      "description": "Grocery shopping",
+      "category": "Food",
+      "date": "2025-01-07"
+    },
+    {
+      "amount": -120.0,
+      "description": "Gas bill",
+      "category": "Utilities",
+      "date": "2025-01-08"
+    },
+    {
+      "amount": 450.0,
+      "description": "Freelance work",
+      "category": "Income",
+      "date": "2025-01-09"
+    },
+    {
+      "amount": -89.99,
+      "description": "Internet subscription",
+      "category": "Utilities",
+      "date": "2025-01-10"
+    },
+    {
+      "amount": -35.25,
+      "description": "Coffee shop",
+      "category": "Food",
+      "date": "2025-01-11"
+    },
+    {
+      "amount": -1200.0,
+      "description": "Rent payment",
+      "category": "Housing",
+      "date": "2025-01-12"
+    },
+    {
+      "amount": 100.0,
+      "description": "Cash gift",
+      "category": "Income",
+      "date": "2025-01-13"
+    },
+    {
+      "amount": -45.75,
+      "description": "Restaurant dinner",
+      "category": "Food",
+      "date": "2025-01-14"
+    },
+    {
+      "amount": -250.0,
+      "description": "Car insurance",
+      "category": "Insurance",
+      "date": "2025-01-15"
+    }
+  ]
+}

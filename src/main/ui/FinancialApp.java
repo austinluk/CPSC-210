@@ -1,11 +1,15 @@
 package ui;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import model.FinancialTracker;
 import model.Transaction;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
 /**
  * Financial Tracker console application that allows users to manage their
@@ -18,6 +22,8 @@ public class FinancialApp {
     private FinancialTracker tracker;
     private Scanner input;
     private boolean keepGoing;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     /**
      * EFFECTS: runs the financial tracker application
@@ -33,6 +39,8 @@ public class FinancialApp {
         keepGoing = true;
         tracker = new FinancialTracker();
         input = new Scanner(System.in);
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
 
         System.out.println("\n=== Welcome to Financial Tracker ===");
 
@@ -55,10 +63,10 @@ public class FinancialApp {
         System.out.println("3. View Financial Summary");
         System.out.println("4. Filter Transactions by Category");
         System.out.println("5. Delete Transaction");
-        System.out.println("6. Quit");
-        System.out.println("\ts -> :test:save work room to file");
-        System.out.println("\tl -> :test:load work room from file");
-        System.out.print("Please select an option (1-6): ");
+        System.out.println("6. Save Financial History");
+        System.out.println("7. Load Financial History");
+        System.out.println("8. Quit");
+        System.out.print("Please select an option (1-8): ");
     }
 
     /**
@@ -84,6 +92,12 @@ public class FinancialApp {
                 deleteTransaction();
                 break;
             case "6":
+                saveFinancialHistory();
+                break;
+            case "7":
+                loadFinancialHistory();
+                break;
+            case "8":
                 keepGoing = false;
                 break;
             default:
@@ -317,14 +331,27 @@ public class FinancialApp {
 
         } while (choice != 0);
     }
-    
-    // EFFECTS: saves FinancialHistory
+
+    // EFFECTS: saves the financial tracker to file
     private void saveFinancialHistory() {
-        //stub
+        try {
+            jsonWriter.open();
+            jsonWriter.write(tracker);
+            jsonWriter.close();
+            System.out.println("Saved Financial History to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
     }
 
-    // EFFECTS: load FinancialHistory
-    private void loadFinancialHistory(){
-        //stub
+    // MODIFIES: this
+    // EFFECTS: loads financial tracker from file
+    private void loadFinancialHistory() {
+        try {
+            tracker = jsonReader.read();
+            System.out.println("Loaded Financial History from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+        }
     }
 }

@@ -4,7 +4,7 @@ import model.FinancialTracker;
 import org.json.JSONObject;
 import java.io.*;
 
-// Represents a writer that writes JSON representation of Finanical Tracker to file
+// Represents a writer that writes JSON representation of Financial Tracker to file
 public class JsonWriter {
 
     private static final int TAB = 4;

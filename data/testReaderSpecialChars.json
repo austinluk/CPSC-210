@@ -1,0 +1,16 @@
+{
+  "transactions": [
+    {
+      "amount": -25.5,
+      "description": "Café & restaurant bill",
+      "category": "Food",
+      "date": "2025-07-18"
+    },
+    {
+      "amount": 100.0,
+      "description": "Deposit (ATM #123) \"Cash\"",
+      "category": "Banking",
+      "date": "2025-07-18"
+    }
+  ]
+}

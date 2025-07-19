@@ -1,0 +1,10 @@
+{
+  "transactions": [
+    {
+      "amount": 100.0,
+      "description": "Test transaction",
+      "category": "Test",
+      "date": "invalid-date-format"
+    }
+  ]
+}
