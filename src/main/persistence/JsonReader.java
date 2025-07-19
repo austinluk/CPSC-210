@@ -14,6 +14,7 @@ import org.json.*;
 
 // Represents a reader that reads financial tracker from JSON data stored in file
 public class JsonReader {
+
     private String source;
 
     // EFFECTS: constructs reader to read from source file
@@ -26,7 +27,7 @@ public class JsonReader {
     public FinancialTracker read() throws IOException {
         String jsonData = readFile(source);
         JSONObject jsonObject = new JSONObject(jsonData);
-        return parseWorkRoom(jsonObject);
+        return parseFinancialTracker(jsonObject);
     }
 
     // EFFECTS: reads source file as string and returns it
@@ -40,21 +41,33 @@ public class JsonReader {
         return contentBuilder.toString();
     }
 
-    // EFFECTS: parses workroom from JSON object and returns it
+    // EFFECTS: parses financial tracker from JSON object and returns it
     private FinancialTracker parseFinancialTracker(JSONObject jsonObject) {
-        String name = jsonObject.getString("name");
-        WorkRoom wr = new WorkRoom(name);
-        addThingies(wr, jsonObject);
-        return wr;
+        FinancialTracker tracker = new FinancialTracker();
+        addTransactions(tracker, jsonObject);
+        return tracker;
     }
 
-    // MODIFIES: ft
-    // EFFECTS: parses Transactions from JSON object and adds them to Financial History
-    private void addTransactions(FinancialTracker wr, JSONObject jsonObject) {
-        JSONArray jsonArray = jsonObject.getJSONArray("thingies");
+    // MODIFIES: tracker
+    // EFFECTS: parses transactions from JSON object and adds them to financial tracker
+    private void addTransactions(FinancialTracker tracker, JSONObject jsonObject) {
+        JSONArray jsonArray = jsonObject.getJSONArray("transactions");
         for (Object json : jsonArray) {
-            JSONObject nextThingy = (JSONObject) json;
-            addThingy(wr, nextThingy);
+            JSONObject nextTransaction = (JSONObject) json;
+            addTransaction(tracker, nextTransaction);
         }
+    }
+
+    // MODIFIES: tracker
+    // EFFECTS: parses transaction from JSON object and adds it to financial tracker
+    private void addTransaction(FinancialTracker tracker, JSONObject jsonObject) {
+        double amount = jsonObject.getDouble("amount");
+        String description = jsonObject.getString("description");
+        String category = jsonObject.getString("category");
+        String dateString = jsonObject.getString("date");
+        LocalDate date = LocalDate.parse(dateString);
+
+        Transaction transaction = new Transaction(amount, description, category, date);
+        tracker.addTransaction(transaction);
     }
 }

@@ -1,6 +1,5 @@
 package ui;
 
-import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -14,6 +13,7 @@ import model.Transaction;
  * well as view financial summaries.
  */
 public class FinancialApp {
+
     private static final String JSON_STORE = "./data/FinancialHistory.json";
     private FinancialTracker tracker;
     private Scanner input;
@@ -56,6 +56,8 @@ public class FinancialApp {
         System.out.println("4. Filter Transactions by Category");
         System.out.println("5. Delete Transaction");
         System.out.println("6. Quit");
+        System.out.println("\ts -> :test:save work room to file");
+        System.out.println("\tl -> :test:load work room from file");
         System.out.print("Please select an option (1-6): ");
     }
 
@@ -242,12 +244,12 @@ public class FinancialApp {
             Transaction currTransaction = filteredTransactions.get(i);
             String type = "";
 
-            if (currTransaction.getAmount() >= 0){
+            if (currTransaction.getAmount() >= 0) {
                 type = "Income";
             } else {
                 type = "Expense";
             }
-             
+
             System.out.println((i + 1) + ". [" + type + "] " + currTransaction.getDescription()
                     + " - $" + Math.abs(currTransaction.getAmount()) + " - " + currTransaction.getDate());
             categoryTotal += currTransaction.getAmount();
@@ -277,12 +279,12 @@ public class FinancialApp {
             Transaction currTransaction = transactions.get(i);
             String type = "";
 
-            if (currTransaction.getAmount() >= 0){
+            if (currTransaction.getAmount() >= 0) {
                 type = "Income";
             } else {
                 type = "Expense";
             }
-             
+
             System.out.println((i + 1) + ". [" + type + "] " + currTransaction.getDescription()
                     + " - $" + Math.abs(currTransaction.getAmount()) + " (" + currTransaction.getCategory()
                     + ") - " + currTransaction.getDate());
@@ -290,7 +292,7 @@ public class FinancialApp {
 
         System.out.print("Enter transaction number to delete (or 0 to cancel): ");
         int choice;
-        
+
         do {
             choice = Integer.parseInt(input.nextLine());
 
@@ -314,13 +316,5 @@ public class FinancialApp {
             }
 
         } while (choice != 0);
-    }
-
-    private void saveFinancialHistory(){
-        try {
-            
-        } catch (FileNotFoundException e) {
-            System.out.println("Unable to find the file");
-        }
     }
 }

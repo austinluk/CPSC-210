@@ -1,13 +1,15 @@
 package model;
 
 import java.time.LocalDate;
+import org.json.JSONObject;
+import persistence.Writable;
 
 /**
  * Represents a financial transaction with an amount, description, category,
  * date, and type. A transaction can be either income (positive) or expense
  * (negative).
  */
-public class Transaction {
+public class Transaction implements Writable {
 
     private double amount;
     private String description;
@@ -15,8 +17,8 @@ public class Transaction {
     private LocalDate date;
 
     /**
-     * REQUIRES: Description and category and date is not empty. 
-     * EFFECTS: creates a new transactions
+     * REQUIRES: Description and category and date is not empty. EFFECTS:
+     * creates a new transactions
      */
     public Transaction(double amount, String description, String category, LocalDate date) {
         this.amount = amount;
@@ -51,6 +53,16 @@ public class Transaction {
      */
     public LocalDate getDate() {
         return date;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("amount", amount);
+        json.put("description", description);
+        json.put("category", category);
+        json.put("date", date.toString());
+        return json;
     }
 
 }

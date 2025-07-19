@@ -1,13 +1,12 @@
 package persistence;
-import model.WorkRoom;
-import org.json.JSONObject;
 
-
-import java.io.*;
 import model.FinancialTracker;
+import org.json.JSONObject;
+import java.io.*;
 
 // Represents a writer that writes JSON representation of Finanical Tracker to file
 public class JsonWriter {
+
     private static final int TAB = 4;
     private PrintWriter writer;
     private String destination;
@@ -25,9 +24,9 @@ public class JsonWriter {
     }
 
     // MODIFIES: this
-    // EFFECTS: writes JSON representation of FinanicalTracker to file
-    public void write(FinancialTracker wr) {
-        JSONObject json = wr.toJson();
+    // EFFECTS: writes JSON representation of financial tracker to file
+    public void write(FinancialTracker tracker) {
+        JSONObject json = tracker.toJson();
         saveToFile(json.toString(TAB));
     }
 

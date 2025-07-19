@@ -1,0 +1,14 @@
+{"transactions": [
+    {
+        "date": "2025-01-15",
+        "amount": 1000,
+        "description": "Salary",
+        "category": "Income"
+    },
+    {
+        "date": "2025-01-16",
+        "amount": -50,
+        "description": "Groceries",
+        "category": "Food"
+    }
+]}
