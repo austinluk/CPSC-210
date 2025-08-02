@@ -1,7 +1,9 @@
 package ui;
 
-import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
 
 /**
  * Main GUI window for the Financial Tracker application.
@@ -55,6 +57,7 @@ public class FinancialTrackerGUI extends JFrame {
         
         initializeComponents();
         layoutComponents();
+        addEventHandlers();
         
         // Center the window on screen
         setLocationRelativeTo(null);
@@ -141,6 +144,47 @@ public class FinancialTrackerGUI extends JFrame {
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
         
         add(mainPanel);
+    }
+    
+    /**
+     * Add event handlers to buttons and menu items
+     */
+    private void addEventHandlers() {
+        // Add Transaction button handler
+        addTransactionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(FinancialTrackerGUI.this, 
+                    "Add Transaction button clicked!");
+            }
+        });
+        
+        // Filter by Category button handler
+        filterByCategoryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(FinancialTrackerGUI.this, 
+                    "Filter by Category button clicked!");
+            }
+        });
+        
+        // Save button handler
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(FinancialTrackerGUI.this, 
+                    "Save button clicked!");
+            }
+        });
+        
+        // Load button handler
+        loadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(FinancialTrackerGUI.this, 
+                    "Load button clicked!");
+            }
+        });
     }
     
     /**
