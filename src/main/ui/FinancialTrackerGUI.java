@@ -154,8 +154,7 @@ public class FinancialTrackerGUI extends JFrame {
         addTransactionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(FinancialTrackerGUI.this, 
-                    "Add Transaction button clicked!");
+                showAddTransactionDialog();
             }
         });
         
@@ -185,6 +184,80 @@ public class FinancialTrackerGUI extends JFrame {
                     "Load button clicked!");
             }
         });
+        
+        // Menu item handlers
+        addMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showAddTransactionDialog();
+            }
+        });
+        
+        saveMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(FinancialTrackerGUI.this, 
+                    "Save menu item clicked!");
+            }
+        });
+        
+        loadMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(FinancialTrackerGUI.this, 
+                    "Load menu item clicked!");
+            }
+        });
+        
+        exitMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(FinancialTrackerGUI.this, 
+                    "Exit menu item clicked!");
+            }
+        });
+    }
+    
+    /**
+     * Show dialog for adding a new transaction
+     */
+    private void showAddTransactionDialog() {
+        JPanel panel = new JPanel(new GridLayout(4, 2, 5, 5));
+        
+        JTextField amountField = new JTextField();
+        JTextField descriptionField = new JTextField();
+        JComboBox<String> categoryCombo = new JComboBox<>(new String[]{
+            "Food", "Rent", "Salary", "Entertainment", "Transportation", "Other"
+        });
+        JTextField dateField = new JTextField("2024-01-17");
+        
+        panel.add(new JLabel("Amount ($):"));
+        panel.add(amountField);
+        panel.add(new JLabel("Description:"));
+        panel.add(descriptionField);
+        panel.add(new JLabel("Category:"));
+        panel.add(categoryCombo);
+        panel.add(new JLabel("Date (YYYY-MM-DD):"));
+        panel.add(dateField);
+        
+        int result = JOptionPane.showConfirmDialog(this, panel, 
+            "Add New Transaction", JOptionPane.OK_CANCEL_OPTION);
+        
+        if (result == JOptionPane.OK_OPTION) {
+            String amount = amountField.getText();
+            String description = descriptionField.getText();
+            String category = (String) categoryCombo.getSelectedItem();
+            String date = dateField.getText();
+            
+            if (!amount.isEmpty() && !description.isEmpty()) {
+                String transaction = String.format("New Transaction: %s%s - %s (%s)", 
+                    amount.startsWith("-") ? "" : "+$", amount, category, date);
+                listModel.addElement(transaction);
+                JOptionPane.showMessageDialog(this, "Transaction added successfully!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+            }
+        }
     }
     
     /**
