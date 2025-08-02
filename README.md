@@ -68,3 +68,13 @@ The application will include a graphical user interface (GUI) that supports the 
 - Filter functionality to display transaction subsets by category
 - File management interface for loading and saving application state
 - User-friendly prompts and confirmation dialogs
+
+---
+
+# Instructions for End User
+
+- You can generate the first required action related to the user story "adding multiple Transactions to a Financial Tracker" by clicking the "Add Transaction" button in the main interface or selecting "Add Transaction" from the File menu.
+- You can generate the second required action related to the user story "adding multiple Transactions to a Financial Tracker" by clicking the "Filter by Category" button and selecting a specific category (e.g., Food, Rent, Salary) from the dropdown menu to display only transactions matching that category.
+- You can locate my visual component by looking at the main transaction display panel in the center of the application window, which shows all your financial transactions in a formatted table/list view.
+- You can save the state of my application by clicking the "Save" button in the toolbar or selecting "Save Financial Data" from the File menu.
+- You can reload the state of my application by clicking the "Load" button in the toolbar or selecting "Load Financial Data" from the File menu, or by responding "Yes" to the prompt that appears when the application starts asking if you want to load your previous data.
