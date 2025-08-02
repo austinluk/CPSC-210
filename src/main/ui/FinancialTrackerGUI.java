@@ -22,7 +22,7 @@ import persistence.JsonWriter;
  */
 public class FinancialTrackerGUI extends JFrame {
 
-    private static final int WINDOW_WIDTH = 800;
+    private static final int WINDOW_WIDTH = 1050;
     private static final int WINDOW_HEIGHT = 600;
     private static final String JSON_STORE = "./data/FinancialHistory.json";
 
@@ -36,11 +36,15 @@ public class FinancialTrackerGUI extends JFrame {
     private JPanel topPanel;
     private JPanel centerPanel;
     private JPanel bottomPanel;
+    private JPanel rightPanel;
 
     // Components for transaction display
     private JScrollPane transactionScrollPane;
     private JList<String> transactionList;
     private DefaultListModel<String> listModel;
+
+    // Visual component - Financial Summary Panel
+    private FinancialSummaryPanel summaryPanel;
 
     // Buttons
     private JButton addTransactionButton;
@@ -63,7 +67,30 @@ public class FinancialTrackerGUI extends JFrame {
         tracker = new FinancialTracker();
         jsonWriter = new JsonWriter(JSON_STORE);
         jsonReader = new JsonReader(JSON_STORE);
+
+        // Add some default transactions Test
+        // addDefaultTransactions();
         initializeGUI();
+    }
+
+    /**
+     * Add default transactions for demonstration purposes
+     */
+    private void addDefaultTransactions() {
+        try {
+            // Add some sample income transactions
+            tracker.addTransaction(new Transaction(2500.00, "Monthly Salary", "Salary", LocalDate.now().minusDays(5)));
+            tracker.addTransaction(new Transaction(500.00, "Freelance Work", "Salary", LocalDate.now().minusDays(10)));
+
+            // Add some sample expense transactions
+            tracker.addTransaction(new Transaction(-800.00, "Monthly Rent", "Rent", LocalDate.now().minusDays(3)));
+            tracker.addTransaction(new Transaction(-150.00, "Groceries", "Food", LocalDate.now().minusDays(2)));
+            tracker.addTransaction(new Transaction(-60.00, "Gas Bill", "Other", LocalDate.now().minusDays(1)));
+            tracker.addTransaction(new Transaction(-45.00, "Restaurant Dinner", "Food", LocalDate.now()));
+        } catch (Exception e) {
+            // If there's any issue with default transactions, just continue
+            System.out.println("Note: Could not add default transactions");
+        }
     }
 
     /**
@@ -93,13 +120,17 @@ public class FinancialTrackerGUI extends JFrame {
         topPanel = new JPanel(new FlowLayout());
         centerPanel = new JPanel(new BorderLayout());
         bottomPanel = new JPanel(new FlowLayout());
+        rightPanel = new JPanel(new BorderLayout());
 
         // Initialize transaction list
         listModel = new DefaultListModel<>();
         transactionList = new JList<>(listModel);
         transactionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         transactionScrollPane = new JScrollPane(transactionList);
-        transactionScrollPane.setPreferredSize(new Dimension(750, 400));
+        transactionScrollPane.setPreferredSize(new Dimension(500, 400));
+
+        // Initialize visual component - Financial Summary Panel
+        summaryPanel = new FinancialSummaryPanel();
 
         // Load existing data and refresh display
         refreshTransactionDisplay();
@@ -151,6 +182,9 @@ public class FinancialTrackerGUI extends JFrame {
         centerPanel.setBorder(BorderFactory.createTitledBorder("Transaction History"));
         centerPanel.add(transactionScrollPane, BorderLayout.CENTER);
 
+        // Right panel with visual component
+        rightPanel.add(summaryPanel, BorderLayout.CENTER);
+
         // Bottom panel with file operations
         bottomPanel.setBorder(BorderFactory.createTitledBorder("File Operations"));
         bottomPanel.add(saveButton);
@@ -159,6 +193,7 @@ public class FinancialTrackerGUI extends JFrame {
         // Add panels to main panel
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
+        mainPanel.add(rightPanel, BorderLayout.EAST);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
@@ -273,7 +308,7 @@ public class FinancialTrackerGUI extends JFrame {
                 Transaction transaction = new Transaction(amount, description, category, date);
                 tracker.addTransaction(transaction);
                 refreshTransactionDisplay();
-                
+
                 JOptionPane.showMessageDialog(this, "Transaction added successfully!");
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Please enter a valid amount (number).");
@@ -294,12 +329,12 @@ public class FinancialTrackerGUI extends JFrame {
 
         if (selectedCategory != null) {
             listModel.clear();
-            
+
             if (selectedCategory.equals("All")) {
                 refreshTransactionDisplay();
             } else {
                 List<Transaction> filteredTransactions = tracker.getTransactionsByCategory(selectedCategory);
-                
+
                 if (filteredTransactions.isEmpty()) {
                     listModel.addElement("No transactions found for category: " + selectedCategory);
                 } else {
@@ -391,6 +426,9 @@ public class FinancialTrackerGUI extends JFrame {
                 listModel.addElement(displayText);
             }
         }
+
+        // Refresh the visual component
+        summaryPanel.repaint();
     }
 
     /**
@@ -401,6 +439,89 @@ public class FinancialTrackerGUI extends JFrame {
         return String.format("%s$%.2f - %s (%s) [%s]",
                 sign, transaction.getAmount(), transaction.getCategory(),
                 transaction.getDate(), transaction.getDescription());
+    }
+
+    /**
+     * Custom panel that displays financial summary with visual chart This
+     * satisfies the GUI visual component requirement
+     */
+    private class FinancialSummaryPanel extends JPanel {
+
+        private static final int PANEL_WIDTH = 250;
+        private static final int PANEL_HEIGHT = 300;
+
+        public FinancialSummaryPanel() {
+            setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
+            setBorder(BorderFactory.createTitledBorder("Financial Summary"));
+            setBackground(Color.WHITE);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            if (tracker == null) {
+                return;
+            }
+
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Calculate financial data
+            double totalIncome = tracker.getTotalIncome();
+            double totalExpenses = 0.0;
+            for (Transaction t : tracker.getTransactions()) {
+                if (t.getAmount() < 0) {
+                    totalExpenses += Math.abs(t.getAmount());
+                }
+            }
+            double balance = totalIncome - totalExpenses;
+
+            // Draw title
+            g2d.setFont(new Font("Arial", Font.BOLD, 14));
+            g2d.setColor(Color.BLACK);
+            g2d.drawString("Financial Overview", 10, 30);
+
+            // Draw text summary
+            g2d.setFont(new Font("Arial", Font.PLAIN, 12));
+            g2d.drawString(String.format("Total Income: $%.2f", totalIncome), 10, 50);
+            g2d.drawString(String.format("Total Expenses: $%.2f", totalExpenses), 10, 70);
+            g2d.setColor(balance >= 0 ? Color.GREEN : Color.RED);
+            g2d.drawString(String.format("Balance: $%.2f", balance), 10, 90);
+
+            // Draw simple bar chart - always show bars even if amounts are 0
+            int chartY = 110;
+            int barHeight = 25;
+            int barSpacing = 45; // Increased spacing between bars
+            int maxBarWidth = 200;
+            double maxAmount = Math.max(totalIncome, totalExpenses);
+            
+            // Ensure we always have a minimum scale for the bars
+            if (maxAmount == 0) {
+                maxAmount = 100; // Default scale when no transactions exist
+            }
+
+            // Income bar (green) - always visible
+            g2d.setColor(Color.GREEN);
+            int incomeWidth = maxAmount > 0 ? (int) ((totalIncome / maxAmount) * maxBarWidth) : 0;
+            g2d.fillRect(10, chartY, incomeWidth, barHeight);
+            g2d.setColor(Color.BLACK);
+            g2d.drawRect(10, chartY, maxBarWidth, barHeight);
+            g2d.drawString("Income", 10, chartY - 5);
+
+            // Expenses bar (red) - always visible with more spacing
+            g2d.setColor(Color.RED);
+            int expenseWidth = maxAmount > 0 ? (int) ((totalExpenses / maxAmount) * maxBarWidth) : 0;
+            g2d.fillRect(10, chartY + barSpacing, expenseWidth, barHeight);
+            g2d.setColor(Color.BLACK);
+            g2d.drawRect(10, chartY + barSpacing, maxBarWidth, barHeight);
+            g2d.drawString("Expenses", 10, chartY + barSpacing - 5);
+
+            // Draw transaction count
+            g2d.setColor(Color.BLUE);
+            g2d.drawString("Total Transactions: " + tracker.getTransactionCount(), 10, 210);
+
+        }
     }
 
     /**
