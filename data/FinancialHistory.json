@@ -1,1 +1,14 @@
-{"transactions": []}
+{"transactions": [
+    {
+        "date": "2025-08-02",
+        "amount": 500,
+        "description": "Annversary",
+        "category": "Food"
+    },
+    {
+        "date": "2025-08-02",
+        "amount": 200,
+        "description": "Monthly",
+        "category": "Rent"
+    }
+]}

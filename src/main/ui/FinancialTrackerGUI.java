@@ -3,7 +3,18 @@ package ui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 import javax.swing.*;
+
+import model.FinancialTracker;
+import model.Transaction;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
 /**
  * Main GUI window for the Financial Tracker application. This is the base
@@ -13,6 +24,12 @@ public class FinancialTrackerGUI extends JFrame {
 
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
+    private static final String JSON_STORE = "./data/FinancialHistory.json";
+
+    // Data management
+    private FinancialTracker tracker;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     // Main panels
     private JPanel mainPanel;
@@ -43,6 +60,9 @@ public class FinancialTrackerGUI extends JFrame {
      * Constructor to create the GUI window
      */
     public FinancialTrackerGUI() {
+        tracker = new FinancialTracker();
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
         initializeGUI();
     }
 
@@ -81,10 +101,8 @@ public class FinancialTrackerGUI extends JFrame {
         transactionScrollPane = new JScrollPane(transactionList);
         transactionScrollPane.setPreferredSize(new Dimension(750, 400));
 
-        // Add some sample data for visual purposes
-        listModel.addElement("Sample Transaction 1: +$1000.00 - Salary (2024-01-15)");
-        listModel.addElement("Sample Transaction 2: -$50.00 - Food (2024-01-16)");
-        listModel.addElement("Sample Transaction 3: -$800.00 - Rent (2024-01-16)");
+        // Load existing data and refresh display
+        refreshTransactionDisplay();
 
         // Initialize buttons
         addTransactionButton = new JButton("Add Transaction");
@@ -223,7 +241,7 @@ public class FinancialTrackerGUI extends JFrame {
         JComboBox<String> categoryCombo = new JComboBox<>(new String[]{
             "Food", "Rent", "Salary", "Entertainment", "Transportation", "Other"
         });
-        JTextField dateField = new JTextField("2024-01-17");
+        JTextField dateField = new JTextField(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         panel.add(new JLabel("Amount ($):"));
         panel.add(amountField);
@@ -238,18 +256,29 @@ public class FinancialTrackerGUI extends JFrame {
                 "Add New Transaction", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            String amount = amountField.getText();
-            String description = descriptionField.getText();
-            String category = (String) categoryCombo.getSelectedItem();
-            String date = dateField.getText();
+            try {
+                String amountText = amountField.getText().trim();
+                String description = descriptionField.getText().trim();
+                String category = (String) categoryCombo.getSelectedItem();
+                String dateText = dateField.getText().trim();
 
-            if (!amount.isEmpty() && !description.isEmpty()) {
-                String transaction = String.format("New Transaction: %s%s - %s (%s)",
-                        amount.startsWith("-") ? "" : "+$", amount, category, date);
-                listModel.addElement(transaction);
+                if (amountText.isEmpty() || description.isEmpty() || dateText.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+                    return;
+                }
+
+                double amount = Double.parseDouble(amountText);
+                LocalDate date = LocalDate.parse(dateText, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                Transaction transaction = new Transaction(amount, description, category, date);
+                tracker.addTransaction(transaction);
+                refreshTransactionDisplay();
+                
                 JOptionPane.showMessageDialog(this, "Transaction added successfully!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid amount (number).");
+            } catch (DateTimeParseException e) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid date in YYYY-MM-DD format.");
             }
         }
     }
@@ -264,11 +293,21 @@ public class FinancialTrackerGUI extends JFrame {
                 JOptionPane.QUESTION_MESSAGE, null, categories, categories[0]);
 
         if (selectedCategory != null) {
+            listModel.clear();
+            
             if (selectedCategory.equals("All")) {
-                JOptionPane.showMessageDialog(this, "Showing all transactions");
+                refreshTransactionDisplay();
             } else {
-                JOptionPane.showMessageDialog(this, "Filtering by category: " + selectedCategory
-                        + "\n(Filter functionality will be implemented in next step)");
+                List<Transaction> filteredTransactions = tracker.getTransactionsByCategory(selectedCategory);
+                
+                if (filteredTransactions.isEmpty()) {
+                    listModel.addElement("No transactions found for category: " + selectedCategory);
+                } else {
+                    for (Transaction transaction : filteredTransactions) {
+                        String displayText = formatTransactionForDisplay(transaction);
+                        listModel.addElement(displayText);
+                    }
+                }
             }
         }
     }
@@ -282,7 +321,14 @@ public class FinancialTrackerGUI extends JFrame {
                 JOptionPane.YES_NO_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
-            JOptionPane.showMessageDialog(this, "Data saved successfully!\n(Save functionality will be implemented in next step)");
+            try {
+                jsonWriter.open();
+                jsonWriter.write(tracker);
+                jsonWriter.close();
+                JOptionPane.showMessageDialog(this, "Data saved successfully!");
+            } catch (FileNotFoundException e) {
+                JOptionPane.showMessageDialog(this, "Unable to save file: " + JSON_STORE);
+            }
         }
     }
 
@@ -295,7 +341,13 @@ public class FinancialTrackerGUI extends JFrame {
                 JOptionPane.YES_NO_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
-            JOptionPane.showMessageDialog(this, "Data loaded successfully!\n(Load functionality will be implemented in next step)");
+            try {
+                tracker = jsonReader.read();
+                refreshTransactionDisplay();
+                JOptionPane.showMessageDialog(this, "Data loaded successfully!");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Unable to read from file: " + JSON_STORE);
+            }
         }
     }
 
@@ -308,12 +360,47 @@ public class FinancialTrackerGUI extends JFrame {
                 JOptionPane.YES_NO_CANCEL_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
-            showSaveDialog();
-            System.exit(0);
+            try {
+                jsonWriter.open();
+                jsonWriter.write(tracker);
+                jsonWriter.close();
+                JOptionPane.showMessageDialog(this, "Data saved successfully!");
+                System.exit(0);
+            } catch (FileNotFoundException e) {
+                JOptionPane.showMessageDialog(this, "Unable to save file. Exit anyway?");
+                System.exit(0);
+            }
         } else if (result == JOptionPane.NO_OPTION) {
             System.exit(0);
         }
         // If CANCEL, do nothing (stay in application)
+    }
+
+    /**
+     * Refresh the transaction display with current tracker data
+     */
+    private void refreshTransactionDisplay() {
+        listModel.clear();
+        List<Transaction> transactions = tracker.getTransactions();
+
+        if (transactions.isEmpty()) {
+            listModel.addElement("No transactions yet. Add some transactions to get started!");
+        } else {
+            for (Transaction transaction : transactions) {
+                String displayText = formatTransactionForDisplay(transaction);
+                listModel.addElement(displayText);
+            }
+        }
+    }
+
+    /**
+     * Format a transaction for display in the list
+     */
+    private String formatTransactionForDisplay(Transaction transaction) {
+        String sign = transaction.getAmount() >= 0 ? "+" : "";
+        return String.format("%s$%.2f - %s (%s) [%s]",
+                sign, transaction.getAmount(), transaction.getCategory(),
+                transaction.getDate(), transaction.getDescription());
     }
 
     /**
