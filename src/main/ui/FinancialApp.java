@@ -75,35 +75,72 @@ public class FinancialApp {
      * command or displays error for invalid input
      */
     private void processCommand(String command) {
+        executeCommand(command);
+    }
+
+    /**
+     * EFFECTS: executes the appropriate action based on the command
+     */
+    private void executeCommand(String command) {
+        if (executeTransactionCommands(command)) {
+            return;
+        }
+        if (executeFileCommands(command)) {
+            return;
+        }
+        if (command.equals("8")) {
+            keepGoing = false;
+        } else {
+            handleInvalidCommand();
+        }
+    }
+
+    /**
+     * EFFECTS: executes transaction-related commands; returns true if command was handled
+     */
+    private boolean executeTransactionCommands(String command) {
         switch (command) {
             case "1":
                 addTransaction();
-                break;
+                return true;
             case "2":
                 viewAllTransactions();
-                break;
+                return true;
             case "3":
                 viewFinancialSummary();
-                break;
+                return true;
             case "4":
                 filterTransactionsByCategory();
-                break;
+                return true;
             case "5":
                 deleteTransaction();
-                break;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * EFFECTS: executes file-related commands; returns true if command was handled
+     */
+    private boolean executeFileCommands(String command) {
+        switch (command) {
             case "6":
                 saveFinancialHistory();
-                break;
+                return true;
             case "7":
                 loadFinancialHistory();
-                break;
-            case "8":
-                keepGoing = false;
-                break;
+                return true;
             default:
-                System.out.println("Invalid selection. Please try again.");
-                break;
+                return false;
         }
+    }
+
+    /**
+     * EFFECTS: displays error message for invalid command
+     */
+    private void handleInvalidCommand() {
+        System.out.println("Invalid selection. Please try again.");
     }
 
     /**
@@ -115,47 +152,80 @@ public class FinancialApp {
     private void addTransaction() {
         System.out.println("\n--- Add New Transaction ---");
 
-        System.out.print("Enter amount (positive for income, negative for expense): $");
-        double amount = Double.parseDouble(input.nextLine());
-
-        System.out.print("Enter description: ");
-        String description = input.nextLine().trim();
-
-        if (description.isEmpty()) {
-            System.out.println("Description cannot be empty!");
+        double amount = getTransactionAmount();
+        String description = getTransactionDescription();
+        if (description == null) {
             return;
         }
 
-        System.out.print("Enter category (e.g., Food, Rent, Salary, Entertainment): ");
-        String category = input.nextLine().trim();
-
-        if (category.isEmpty()) {
-            System.out.println("Category cannot be empty!");
+        String category = getTransactionCategory();
+        if (category == null) {
             return;
         }
 
-        System.out.print("Enter date (YYYY-MM-DD) or press Enter for today: ");
-        String dateInput = input.nextLine().trim();
-        LocalDate date;
-
-        if (dateInput.isEmpty()) {
-            date = LocalDate.now();
-        } else {
-            date = LocalDate.parse(dateInput, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        }
+        LocalDate date = getTransactionDate();
 
         Transaction transaction = new Transaction(amount, description, category, date);
         tracker.addTransaction(transaction);
+        displayTransactionAdded(amount);
+    }
 
-        String type;
-        if (amount >= 0) {
-            type = "Income";
+    /**
+     * EFFECTS: prompts user for and returns transaction amount
+     */
+    private double getTransactionAmount() {
+        System.out.print("Enter amount (positive for income, negative for expense): $");
+        return Double.parseDouble(input.nextLine());
+    }
 
-        } else {
-            type = "Expense";
+    /**
+     * EFFECTS: prompts user for and returns transaction description; returns
+     * null if empty
+     */
+    private String getTransactionDescription() {
+        System.out.print("Enter description: ");
+        String description = input.nextLine().trim();
+        if (description.isEmpty()) {
+            System.out.println("Description cannot be empty!");
+            return null;
         }
-        System.out.println(type + " transaction added successfully!");
+        return description;
+    }
 
+    /**
+     * EFFECTS: prompts user for and returns transaction category; returns null
+     * if empty
+     */
+    private String getTransactionCategory() {
+        System.out.print("Enter category (e.g., Food, Rent, Salary, Entertainment): ");
+        String category = input.nextLine().trim();
+        if (category.isEmpty()) {
+            System.out.println("Category cannot be empty!");
+            return null;
+        }
+        return category;
+    }
+
+    /**
+     * EFFECTS: prompts user for and returns transaction date; uses current date
+     * if empty
+     */
+    private LocalDate getTransactionDate() {
+        System.out.print("Enter date (YYYY-MM-DD) or press Enter for today: ");
+        String dateInput = input.nextLine().trim();
+        if (dateInput.isEmpty()) {
+            return LocalDate.now();
+        } else {
+            return LocalDate.parse(dateInput, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+    }
+
+    /**
+     * EFFECTS: displays success message for added transaction
+     */
+    private void displayTransactionAdded(double amount) {
+        String type = amount >= 0 ? "Income" : "Expense";
+        System.out.println(type + " transaction added successfully!");
     }
 
     /**
@@ -236,33 +306,43 @@ public class FinancialApp {
      */
     private void filterTransactionsByCategory() {
         System.out.println("\n--- Filter by Category ---");
-        System.out.print("Enter category to filter by: ");
-        String category = input.nextLine().trim();
-
-        if (category.isEmpty()) {
-            System.out.println("Category cannot be empty!");
+        String category = getCategoryInput();
+        if (category == null) {
             return;
         }
 
         List<Transaction> filteredTransactions = tracker.getTransactionsByCategory(category);
-
         if (filteredTransactions.isEmpty()) {
             System.out.println("No transactions found for category: " + category);
             return;
         }
 
+        displayCategoryTransactions(category, filteredTransactions);
+    }
+
+    /**
+     * EFFECTS: prompts user for category and returns it; returns null if empty
+     */
+    private String getCategoryInput() {
+        System.out.print("Enter category to filter by: ");
+        String category = input.nextLine().trim();
+        if (category.isEmpty()) {
+            System.out.println("Category cannot be empty!");
+            return null;
+        }
+        return category;
+    }
+
+    /**
+     * EFFECTS: displays all transactions in the given category with total
+     */
+    private void displayCategoryTransactions(String category, List<Transaction> transactions) {
         System.out.println("\nTransactions in category '" + category + "':");
-
         double categoryTotal = 0.0;
-        for (int i = 0; i < filteredTransactions.size(); i++) {
-            Transaction currTransaction = filteredTransactions.get(i);
-            String type = "";
 
-            if (currTransaction.getAmount() >= 0) {
-                type = "Income";
-            } else {
-                type = "Expense";
-            }
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction currTransaction = transactions.get(i);
+            String type = currTransaction.getAmount() >= 0 ? "Income" : "Expense";
 
             System.out.println((i + 1) + ". [" + type + "] " + currTransaction.getDescription()
                     + " - $" + Math.abs(currTransaction.getAmount()) + " - " + currTransaction.getDate());
@@ -287,49 +367,50 @@ public class FinancialApp {
             return;
         }
 
-        // Display transactions with numbers
+        displayTransactionsForDeletion(transactions);
+        handleTransactionDeletion(transactions);
+    }
+
+    /**
+     * EFFECTS: displays all transactions with numbers for deletion selection
+     */
+    private void displayTransactionsForDeletion(List<Transaction> transactions) {
         System.out.println("Select a transaction to delete:");
         for (int i = 0; i < transactions.size(); i++) {
             Transaction currTransaction = transactions.get(i);
-            String type = "";
-
-            if (currTransaction.getAmount() >= 0) {
-                type = "Income";
-            } else {
-                type = "Expense";
-            }
+            String type = currTransaction.getAmount() >= 0 ? "Income" : "Expense";
 
             System.out.println((i + 1) + ". [" + type + "] " + currTransaction.getDescription()
                     + " - $" + Math.abs(currTransaction.getAmount()) + " (" + currTransaction.getCategory()
                     + ") - " + currTransaction.getDate());
         }
+    }
 
+    /**
+     * MODIFIES: this EFFECTS: handles user input for transaction deletion
+     */
+    private void handleTransactionDeletion(List<Transaction> transactions) {
         System.out.print("Enter transaction number to delete (or 0 to cancel): ");
-        int choice;
+        int choice = Integer.parseInt(input.nextLine());
 
-        do {
-            choice = Integer.parseInt(input.nextLine());
+        if (choice == 0) {
+            System.out.println("Delete cancelled.");
+            return;
+        }
 
-            if (choice == 0) {
-                System.out.println("Delete cancelled.");
-                return;
-            }
+        if (choice < 1 || choice > transactions.size()) {
+            System.out.println("Invalid transaction number.");
+            return;
+        }
 
-            if (choice < 1 || choice > transactions.size()) {
-                System.out.println("Invalid transaction number.");
-                return;
-            }
+        Transaction toDelete = transactions.get(choice - 1);
+        boolean removed = tracker.removeTransaction(toDelete);
 
-            Transaction toDelete = transactions.get(choice - 1);
-            boolean removed = tracker.removeTransaction(toDelete);
-
-            if (removed) {
-                System.out.println("Transaction deleted successfully!");
-            } else {
-                System.out.println("Failed to delete transaction.");
-            }
-
-        } while (choice != 0);
+        if (removed) {
+            System.out.println("Transaction deleted successfully!");
+        } else {
+            System.out.println("Failed to delete transaction.");
+        }
     }
 
     // EFFECTS: saves the financial tracker to file

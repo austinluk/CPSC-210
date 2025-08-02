@@ -203,78 +203,53 @@ public class FinancialTrackerGUI extends JFrame {
      * Add event handlers to buttons and menu items
      */
     private void addEventHandlers() {
-        // Add Transaction button handler
-        addTransactionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showAddTransactionDialog();
-            }
-        });
+        addButtonHandlers();
+        addMenuHandlers();
+    }
 
-        // Filter by Category button handler
-        filterByCategoryButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showFilterByCategoryDialog();
-            }
-        });
+    /**
+     * Add event handlers to buttons
+     */
+    private void addButtonHandlers() {
+        addTransactionButton.addActionListener(e -> showAddTransactionDialog());
+        filterByCategoryButton.addActionListener(e -> showFilterByCategoryDialog());
+        saveButton.addActionListener(e -> showSaveDialog());
+        loadButton.addActionListener(e -> showLoadDialog());
+    }
 
-        // Save button handler
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showSaveDialog();
-            }
-        });
-
-        // Load button handler
-        loadButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showLoadDialog();
-            }
-        });
-
-        // Menu item handlers
-        addMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showAddTransactionDialog();
-            }
-        });
-
-        saveMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showSaveDialog();
-            }
-        });
-
-        loadMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showLoadDialog();
-            }
-        });
-
-        exitMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showExitDialog();
-            }
-        });
+    /**
+     * Add event handlers to menu items
+     */
+    private void addMenuHandlers() {
+        addMenuItem.addActionListener(e -> showAddTransactionDialog());
+        saveMenuItem.addActionListener(e -> showSaveDialog());
+        loadMenuItem.addActionListener(e -> showLoadDialog());
+        exitMenuItem.addActionListener(e -> showExitDialog());
     }
 
     /**
      * Show dialog for adding a new transaction
      */
     private void showAddTransactionDialog() {
+        JPanel panel = createTransactionInputPanel();
+        int result = JOptionPane.showConfirmDialog(this, panel,
+                "Add New Transaction", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            processTransactionInput(panel);
+        }
+    }
+
+    /**
+     * Create input panel for transaction dialog
+     */
+    private JPanel createTransactionInputPanel() {
         JPanel panel = new JPanel(new GridLayout(4, 2, 5, 5));
 
         JTextField amountField = new JTextField();
         JTextField descriptionField = new JTextField();
         JComboBox<String> categoryCombo = new JComboBox<>(new String[]{
-            "Food", "Rent", "Salary", "Entertainment", "Transportation", "Other"
+                "Food", "Rent", "Salary", "Entertainment", "Transportation", "Other"
         });
         JTextField dateField = new JTextField(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
@@ -287,34 +262,61 @@ public class FinancialTrackerGUI extends JFrame {
         panel.add(new JLabel("Date (YYYY-MM-DD):"));
         panel.add(dateField);
 
-        int result = JOptionPane.showConfirmDialog(this, panel,
-                "Add New Transaction", JOptionPane.OK_CANCEL_OPTION);
+        return panel;
+    }
 
-        if (result == JOptionPane.OK_OPTION) {
-            try {
-                String amountText = amountField.getText().trim();
-                String description = descriptionField.getText().trim();
-                String category = (String) categoryCombo.getSelectedItem();
-                String dateText = dateField.getText().trim();
+    /**
+     * Process input from transaction dialog
+     */
+    private void processTransactionInput(JPanel panel) {
+        try {
+            Component[] components = panel.getComponents();
+            JTextField amountField = (JTextField) components[1];
+            JTextField descriptionField = (JTextField) components[3];
+            JComboBox<String> categoryCombo = (JComboBox<String>) components[5];
+            JTextField dateField = (JTextField) components[7];
 
-                if (amountText.isEmpty() || description.isEmpty() || dateText.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Please fill in all fields.");
-                    return;
-                }
+            String amountText = amountField.getText().trim();
+            String description = descriptionField.getText().trim();
+            String category = (String) categoryCombo.getSelectedItem();
+            String dateText = dateField.getText().trim();
 
-                double amount = Double.parseDouble(amountText);
-                LocalDate date = LocalDate.parse(dateText, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-                Transaction transaction = new Transaction(amount, description, category, date);
-                tracker.addTransaction(transaction);
-                refreshTransactionDisplay();
-
-                JOptionPane.showMessageDialog(this, "Transaction added successfully!");
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid amount (number).");
-            } catch (DateTimeParseException e) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid date in YYYY-MM-DD format.");
+            if (validateTransactionInput(amountText, description, dateText)) {
+                createAndAddTransaction(amountText, description, category, dateText);
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error processing transaction input.");
+        }
+    }
+
+    /**
+     * Validate transaction input fields
+     */
+    private boolean validateTransactionInput(String amount, String description, String date) {
+        if (amount.isEmpty() || description.isEmpty() || date.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Create and add transaction to tracker
+     */
+    private void createAndAddTransaction(String amountText, String description, String category, String dateText) {
+        try {
+            double amount = Double.parseDouble(amountText);
+            LocalDate date = LocalDate.parse(dateText, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            Transaction transaction = new Transaction(amount, description, category, date);
+            tracker.addTransaction(transaction);
+            refreshTransactionDisplay();
+
+            JOptionPane.showMessageDialog(this, "Transaction added successfully!");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid amount (number).");
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid date in YYYY-MM-DD format.");
         }
     }
 
@@ -467,15 +469,19 @@ public class FinancialTrackerGUI extends JFrame {
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // Calculate financial data
-            double totalIncome = tracker.getTotalIncome();
-            double totalExpenses = 0.0;
-            for (Transaction t : tracker.getTransactions()) {
-                if (t.getAmount() < 0) {
-                    totalExpenses += Math.abs(t.getAmount());
-                }
-            }
-            double balance = totalIncome - totalExpenses;
+            drawFinancialSummary(g2d);
+            drawBarChart(g2d);
+            drawTransactionCount(g2d);
+        }
+
+        /**
+         * Draw financial summary text
+         */
+        private void drawFinancialSummary(Graphics2D g2d) {
+            double[] amounts = calculateFinancialAmounts();
+            double totalIncome = amounts[0];
+            double totalExpenses = amounts[1];
+            double balance = amounts[2];
 
             // Draw title
             g2d.setFont(new Font("Arial", Font.BOLD, 14));
@@ -488,39 +494,76 @@ public class FinancialTrackerGUI extends JFrame {
             g2d.drawString(String.format("Total Expenses: $%.2f", totalExpenses), 10, 70);
             g2d.setColor(balance >= 0 ? Color.GREEN : Color.RED);
             g2d.drawString(String.format("Balance: $%.2f", balance), 10, 90);
+        }
 
-            // Draw simple bar chart - always show bars even if amounts are 0
+        /**
+         * Calculate financial amounts
+         */
+        private double[] calculateFinancialAmounts() {
+            double totalIncome = tracker.getTotalIncome();
+            double totalExpenses = 0.0;
+            for (Transaction t : tracker.getTransactions()) {
+                if (t.getAmount() < 0) {
+                    totalExpenses += Math.abs(t.getAmount());
+                }
+            }
+            double balance = totalIncome - totalExpenses;
+            return new double[]{totalIncome, totalExpenses, balance};
+        }
+
+        /**
+         * Draw bar chart for income and expenses
+         */
+        private void drawBarChart(Graphics2D g2d) {
+            double[] amounts = calculateFinancialAmounts();
+            double totalIncome = amounts[0];
+            double totalExpenses = amounts[1];
+
             int chartY = 110;
             int barHeight = 25;
-            int barSpacing = 45; // Increased spacing between bars
+            int barSpacing = 45;
             int maxBarWidth = 200;
             double maxAmount = Math.max(totalIncome, totalExpenses);
-            
-            // Ensure we always have a minimum scale for the bars
+
             if (maxAmount == 0) {
-                maxAmount = 100; // Default scale when no transactions exist
+                maxAmount = 100;
             }
 
-            // Income bar (green) - always visible
+            drawIncomeBar(g2d, totalIncome, maxAmount, chartY, barHeight, maxBarWidth);
+            drawExpenseBar(g2d, totalExpenses, maxAmount, chartY + barSpacing, barHeight, maxBarWidth);
+        }
+
+        /**
+         * Draw income bar
+         */
+        private void drawIncomeBar(Graphics2D g2d, double income, double maxAmount, int y, int height, int maxWidth) {
             g2d.setColor(Color.GREEN);
-            int incomeWidth = maxAmount > 0 ? (int) ((totalIncome / maxAmount) * maxBarWidth) : 0;
-            g2d.fillRect(10, chartY, incomeWidth, barHeight);
+            int incomeWidth = maxAmount > 0 ? (int) ((income / maxAmount) * maxWidth) : 0;
+            g2d.fillRect(10, y, incomeWidth, height);
             g2d.setColor(Color.BLACK);
-            g2d.drawRect(10, chartY, maxBarWidth, barHeight);
-            g2d.drawString("Income", 10, chartY - 5);
+            g2d.drawRect(10, y, maxWidth, height);
+            g2d.drawString("Income", 10, y - 5);
+        }
 
-            // Expenses bar (red) - always visible with more spacing
+        /**
+         * Draw expense bar
+         */
+        private void drawExpenseBar(Graphics2D g2d, double expenses, double maxAmount, 
+                                   int y, int height, int maxWidth) {
             g2d.setColor(Color.RED);
-            int expenseWidth = maxAmount > 0 ? (int) ((totalExpenses / maxAmount) * maxBarWidth) : 0;
-            g2d.fillRect(10, chartY + barSpacing, expenseWidth, barHeight);
+            int expenseWidth = maxAmount > 0 ? (int) ((expenses / maxAmount) * maxWidth) : 0;
+            g2d.fillRect(10, y, expenseWidth, height);
             g2d.setColor(Color.BLACK);
-            g2d.drawRect(10, chartY + barSpacing, maxBarWidth, barHeight);
-            g2d.drawString("Expenses", 10, chartY + barSpacing - 5);
+            g2d.drawRect(10, y, maxWidth, height);
+            g2d.drawString("Expenses", 10, y - 5);
+        }
 
-            // Draw transaction count
+        /**
+         * Draw transaction count
+         */
+        private void drawTransactionCount(Graphics2D g2d) {
             g2d.setColor(Color.BLUE);
             g2d.drawString("Total Transactions: " + tracker.getTransactionCount(), 10, 210);
-
         }
     }
 
