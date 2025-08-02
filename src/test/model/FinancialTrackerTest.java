@@ -3,14 +3,13 @@ package model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-
 public class FinancialTrackerTest {
+
     private FinancialTracker tracker;
     private Transaction income1;
     private Transaction income2;
@@ -32,7 +31,7 @@ public class FinancialTrackerTest {
     void testConstructor() {
         assertEquals(0, tracker.getTransactionCount());
     }
-    
+
     @Test
     void testAddSingleTransaction() {
         tracker.addTransaction(income1);
@@ -75,12 +74,12 @@ public class FinancialTrackerTest {
     void testGetTotalIncome() {
         tracker.addTransaction(income1);
         tracker.addTransaction(income2);
-        
+
         assertEquals(1500.0, tracker.getTotalIncome()); // 1000 + 500
     }
 
     @Test
-    void testGetTransactionsCount(){
+    void testGetTransactionsCount() {
         tracker.addTransaction(income1);
         tracker.addTransaction(expense1);
         tracker.addTransaction(income2);

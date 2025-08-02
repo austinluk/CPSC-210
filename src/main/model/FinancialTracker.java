@@ -10,8 +10,8 @@ import org.json.JSONObject;
 import persistence.Writable;
 
 
-public class FinancialTracker implements Writable{
-
+public class FinancialTracker implements Writable {
+ 
     private List<Transaction> transactions;
 
     /**
@@ -81,7 +81,7 @@ public class FinancialTracker implements Writable{
 
    
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("transactions", transactionsToJson());
         return json;
