@@ -9,9 +9,8 @@ import org.json.JSONObject;
 
 import persistence.Writable;
 
-
 public class FinancialTracker implements Writable {
- 
+
     private List<Transaction> transactions;
 
     /**
@@ -27,6 +26,8 @@ public class FinancialTracker implements Writable {
      */
     public void addTransaction(Transaction transaction) {
         transactions.add(transaction);
+        EventLog.getInstance().logEvent(new Event("Transaction added: " + transaction.getDescription()
+                + " ($" + transaction.getAmount() + ")"));
     }
 
     /**
@@ -35,6 +36,10 @@ public class FinancialTracker implements Writable {
      */
     public boolean removeTransaction(Transaction transaction) {
         boolean removed = transactions.remove(transaction);
+        if (removed) {
+            EventLog.getInstance().logEvent(new Event("Transaction removed: " + transaction.getDescription()
+                    + " ($" + transaction.getAmount() + ")"));
+        }
         return removed;
     }
 
@@ -56,7 +61,18 @@ public class FinancialTracker implements Writable {
                 filteredTransactions.add(transaction);
             }
         }
+        EventLog.getInstance().logEvent(new Event("Transactions filtered by category: " + category
+                + " (found " + filteredTransactions.size() + " transactions)"));
         return filteredTransactions;
+    }
+
+    /**
+     * MODIFIES: this EFFECTS: removes all transactions from the tracker
+     */
+    public void clearTransactions() {
+        int count = transactions.size();
+        transactions.clear();
+        EventLog.getInstance().logEvent(new Event("All transactions cleared (" + count + " transactions removed)"));
     }
 
     /**
@@ -79,7 +95,6 @@ public class FinancialTracker implements Writable {
         return transactions.size();
     }
 
-   
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
