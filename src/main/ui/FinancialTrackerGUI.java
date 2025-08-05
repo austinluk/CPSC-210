@@ -1,6 +1,8 @@
 package ui;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -8,8 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import javax.swing.*;
-import model.Event;
-import model.EventLog;
+
 import model.FinancialTracker;
 import model.Transaction;
 import persistence.JsonReader;
@@ -50,7 +51,6 @@ public class FinancialTrackerGUI extends JFrame {
     private JButton filterByCategoryButton;
     private JButton saveButton;
     private JButton loadButton;
-    private JButton viewEventLogButton;
 
     // Menu
     private JMenuBar menuBar;
@@ -58,7 +58,6 @@ public class FinancialTrackerGUI extends JFrame {
     private JMenuItem addMenuItem;
     private JMenuItem saveMenuItem;
     private JMenuItem loadMenuItem;
-    private JMenuItem viewEventLogMenuItem;
     private JMenuItem exitMenuItem;
 
     /**
@@ -141,7 +140,6 @@ public class FinancialTrackerGUI extends JFrame {
         filterByCategoryButton = new JButton("Filter by Category");
         saveButton = new JButton("Save");
         loadButton = new JButton("Load");
-        viewEventLogButton = new JButton("View Event Log");
 
         // Initialize menu
         createMenuBar();
@@ -158,15 +156,12 @@ public class FinancialTrackerGUI extends JFrame {
         addMenuItem = new JMenuItem("Add Transaction");
         saveMenuItem = new JMenuItem("Save Financial Data");
         loadMenuItem = new JMenuItem("Load Financial Data");
-        viewEventLogMenuItem = new JMenuItem("View Event Log");
         exitMenuItem = new JMenuItem("Exit");
 
         fileMenu.add(addMenuItem);
         fileMenu.addSeparator();
         fileMenu.add(saveMenuItem);
         fileMenu.add(loadMenuItem);
-        fileMenu.addSeparator();
-        fileMenu.add(viewEventLogMenuItem);
         fileMenu.addSeparator();
         fileMenu.add(exitMenuItem);
 
@@ -194,7 +189,6 @@ public class FinancialTrackerGUI extends JFrame {
         bottomPanel.setBorder(BorderFactory.createTitledBorder("File Operations"));
         bottomPanel.add(saveButton);
         bottomPanel.add(loadButton);
-        bottomPanel.add(viewEventLogButton);
 
         // Add panels to main panel
         mainPanel.add(topPanel, BorderLayout.NORTH);
@@ -221,7 +215,6 @@ public class FinancialTrackerGUI extends JFrame {
         filterByCategoryButton.addActionListener(e -> showFilterByCategoryDialog());
         saveButton.addActionListener(e -> showSaveDialog());
         loadButton.addActionListener(e -> showLoadDialog());
-        viewEventLogButton.addActionListener(e -> showEventLogDialog());
     }
 
     /**
@@ -231,7 +224,6 @@ public class FinancialTrackerGUI extends JFrame {
         addMenuItem.addActionListener(e -> showAddTransactionDialog());
         saveMenuItem.addActionListener(e -> showSaveDialog());
         loadMenuItem.addActionListener(e -> showLoadDialog());
-        viewEventLogMenuItem.addActionListener(e -> showEventLogDialog());
         exitMenuItem.addActionListener(e -> showExitDialog());
     }
 
@@ -257,7 +249,7 @@ public class FinancialTrackerGUI extends JFrame {
         JTextField amountField = new JTextField();
         JTextField descriptionField = new JTextField();
         JComboBox<String> categoryCombo = new JComboBox<>(new String[]{
-            "Food", "Rent", "Salary", "Entertainment", "Transportation", "Other"
+                "Food", "Rent", "Salary", "Entertainment", "Transportation", "Other"
         });
         JTextField dateField = new JTextField(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
@@ -410,15 +402,12 @@ public class FinancialTrackerGUI extends JFrame {
                 jsonWriter.write(tracker);
                 jsonWriter.close();
                 JOptionPane.showMessageDialog(this, "Data saved successfully!");
-                printEventLogToConsole();
                 System.exit(0);
             } catch (FileNotFoundException e) {
                 JOptionPane.showMessageDialog(this, "Unable to save file. Exit anyway?");
-                printEventLogToConsole();
                 System.exit(0);
             }
         } else if (result == JOptionPane.NO_OPTION) {
-            printEventLogToConsole();
             System.exit(0);
         }
         // If CANCEL, do nothing (stay in application)
@@ -559,8 +548,8 @@ public class FinancialTrackerGUI extends JFrame {
         /**
          * Draw expense bar
          */
-        private void drawExpenseBar(Graphics2D g2d, double expenses, double maxAmount,
-                int y, int height, int maxWidth) {
+        private void drawExpenseBar(Graphics2D g2d, double expenses, double maxAmount, 
+                                   int y, int height, int maxWidth) {
             g2d.setColor(Color.RED);
             int expenseWidth = maxAmount > 0 ? (int) ((expenses / maxAmount) * maxWidth) : 0;
             g2d.fillRect(10, y, expenseWidth, height);
@@ -575,70 +564,6 @@ public class FinancialTrackerGUI extends JFrame {
         private void drawTransactionCount(Graphics2D g2d) {
             g2d.setColor(Color.BLUE);
             g2d.drawString("Total Transactions: " + tracker.getTransactionCount(), 10, 210);
-        }
-    }
-
-    /**
-     * Show dialog displaying the event log
-     */
-    private void showEventLogDialog() {
-        StringBuilder eventText = new StringBuilder();
-        eventText.append("Event Log:\n");
-        eventText.append("----------\n\n");
-
-        boolean hasEvents = false;
-        for (Event event : EventLog.getInstance()) {
-            eventText.append(event.toString()).append("\n\n");
-            hasEvents = true;
-        }
-
-        if (!hasEvents) {
-            eventText.append("No events logged yet.");
-        }
-
-        JTextArea textArea = new JTextArea(eventText.toString());
-        textArea.setEditable(false);
-        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        textArea.setCaretPosition(0);
-
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setPreferredSize(new Dimension(600, 400));
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        JButton clearButton = new JButton("Clear Event Log");
-        clearButton.addActionListener(e -> {
-            int result = JOptionPane.showConfirmDialog(this,
-                    "Are you sure you want to clear the event log?",
-                    "Clear Event Log",
-                    JOptionPane.YES_NO_OPTION);
-            if (result == JOptionPane.YES_OPTION) {
-                EventLog.getInstance().clear();
-                JOptionPane.showMessageDialog(this, "Event log cleared!");
-                // Close the current dialog and reopen it to show the cleared log
-                SwingUtilities.getWindowAncestor(clearButton).dispose();
-                showEventLogDialog();
-            }
-        });
-        buttonPanel.add(clearButton);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        JOptionPane.showMessageDialog(this, panel, "Financial Tracker Event Log",
-                JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    /**
-     * Print the event log to console
-     */
-    private void printEventLogToConsole() {
-        System.out.println("\nEvent Log:");
-        System.out.println("----------");
-        for (Event event : EventLog.getInstance()) {
-            System.out.println(event.toString());
-            System.out.println();
         }
     }
 

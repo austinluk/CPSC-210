@@ -6,8 +6,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
-import model.Event;
-import model.EventLog;
 import model.FinancialTracker;
 import model.Transaction;
 import persistence.JsonReader;
@@ -53,19 +51,6 @@ public class FinancialApp {
         }
 
         System.out.println("\nGoodbye!");
-        printEventLog();
-    }
-
-    /**
-     * EFFECTS: prints all events from the event log to console
-     */
-    private void printEventLog() {
-        System.out.println("\nEvent Log:");
-        System.out.println("----------");
-        for (Event event : EventLog.getInstance()) {
-            System.out.println(event.toString());
-            System.out.println();
-        }
     }
 
     /**
@@ -111,8 +96,7 @@ public class FinancialApp {
     }
 
     /**
-     * EFFECTS: executes transaction-related commands; returns true if command
-     * was handled
+     * EFFECTS: executes transaction-related commands; returns true if command was handled
      */
     private boolean executeTransactionCommands(String command) {
         switch (command) {
@@ -137,8 +121,7 @@ public class FinancialApp {
     }
 
     /**
-     * EFFECTS: executes file-related commands; returns true if command was
-     * handled
+     * EFFECTS: executes file-related commands; returns true if command was handled
      */
     private boolean executeFileCommands(String command) {
         switch (command) {
