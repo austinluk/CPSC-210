@@ -1,14 +1,6 @@
-{"transactions": [
-    {
-        "date": "2025-08-02",
-        "amount": 500,
-        "description": "Annversary",
-        "category": "Food"
-    },
-    {
-        "date": "2025-08-02",
-        "amount": 200,
-        "description": "Monthly",
-        "category": "Rent"
-    }
-]}
+{"transactions": [{
+    "date": "2025-08-04",
+    "amount": 1.23123123E8,
+    "description": "dwadw",
+    "category": "Food"
+}]}

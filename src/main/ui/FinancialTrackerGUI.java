@@ -1,6 +1,8 @@
 package ui;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -100,8 +102,16 @@ public class FinancialTrackerGUI extends JFrame {
     private void initializeGUI() {
         setTitle("Financial Tracker");
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setResizable(true);
+
+        // Add window listener to handle window closing
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                handleWindowClosing();
+            }
+        });
 
         initializeComponents();
         layoutComponents();
@@ -422,6 +432,13 @@ public class FinancialTrackerGUI extends JFrame {
             System.exit(0);
         }
         // If CANCEL, do nothing (stay in application)
+    }
+
+    /**
+     * Handle window closing event - print event log and exit
+     */
+    private void handleWindowClosing() {
+        showExitDialog();
     }
 
     /**
